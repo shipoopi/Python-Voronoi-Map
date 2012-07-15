@@ -3,12 +3,13 @@ from Callable import Callable
 
 class Parabola:
     isLeaf = False
-    site = None
-    edge = None
-    event = None
-    parent = None
+    site = 0
+    edge = 0
+    event = 0
+    parent = 0
     _left = None
     _right = None
+
     def setLeft(self, p):
         self._left = p
         p.parent = self
@@ -22,15 +23,18 @@ class Parabola:
 
     #static functions
     def GetLeft(p):
-        pass
+        return Parabola.GetLeftChild(Parabola.GetLeftParent(p))
     GetLeft = Callable(GetLeft)
 
     def GetRight(p):
-        pass
+        return Parabola.GetRightChild(Parabola.GetRightParent(p))
     GetRight = Callable(GetRight)
 
     def GetLeftParent(p):
-        pass
+        parent = p.parent
+        pLast = p
+        while p.left() == pLast:
+            pass
     GetLeftParent = Callable(GetLeftParent)
 
     def GetRightParent(p):
@@ -44,3 +48,12 @@ class Parabola:
     def GetRightChild(p):
         pass
     GetRightChild = Callable(GetRightChild)
+
+    def FromParabola(p):
+        p = Parabola()
+        p.site = p
+        p.isLeaf = True
+        p.event = 0
+        p.parent = 0
+        return p
+    FromParabola = Callable(FromParabola)

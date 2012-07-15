@@ -6,6 +6,7 @@ import random
 import math
 import pygame, sys
 import random
+import heapq
 from pygame.locals import *
 
 pygame.init()
@@ -14,9 +15,14 @@ width, height = screenrez
 window = pygame.display.set_mode(screenrez)
 pygame.display.set_caption("Voronoi")
 screen = pygame.display.get_surface()
+clock = pygame.time.Clock()
+
 scanline = 0
 numPoints = 12
+
+#points are y,x so they can be ordered by heapq
 points = [(int(random.random() * width), int(random.random() * height)) for i in range(numPoints)]
+heapq.heapify(points)
 print points
 
 pygame.key.set_repeat(100,30)
@@ -36,31 +42,20 @@ def generate_diagram():
     global scanline, screen, width, height, points
 #    point = (250,300)
     screen.fill((0,0,0))
-
-    pygame.draw.line(screen, (255,0,0), (0,scanline),(width,scanline))
-
-    for point in points:
-        pygame.draw.circle(screen, (128,128,128), (point[0],point[1]),1)
-        pointlist = []
-        safeToDraw = True
-        if point[1] > scanline:
-            for x in range(width):
-                dp = 2.0 * (point[1] - scanline)
-                if dp == 0:
-                    safeToDraw = False
-                    continue
-                a1 = 1.0 / dp
-                b1 = -2.0 * point[0] / dp;
-                c1 = scanline + dp / 4 + point[0] * point[0] / dp;
-                y = int(a1 * x * x + b1 * x + c1)
-                pointlist.append((x,y))
-            if safeToDraw:
-                pygame.draw.lines(screen, (255,255,255), False, pointlist, 1)
+    vertices = []
+    while len(points) != 0:
+        first = None
+        for point in points:
+            first = point
+            #if it's a site event
+                #AddParabola(point)
+            #else:
+                #RemoveParabola(point)
+            break
 
 
 
 
-clock = pygame.time.Clock()
 while True:
     input(pygame.event.get())
     clock.tick(30)
