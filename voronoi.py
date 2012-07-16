@@ -1,6 +1,6 @@
 __author__ = 'sean'
 
-class voronoi:
+class Voronoi:
     edges = 0
     ly = 0
     def __init__(self):
