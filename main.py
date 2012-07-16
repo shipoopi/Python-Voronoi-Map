@@ -9,6 +9,7 @@ import random
 import heapq
 from pygame.locals import *
 from voronoi import Voronoi
+import circle
 
 pygame.init()
 screenrez = (500,500)
@@ -21,21 +22,23 @@ v = Voronoi()
 
 scanline = 0
 numPoints = 12
+events = []
 points = []
 #points are y,x so they can be ordered by heapq
 def generatePoints():
-    global points
+    global events, points
     points = [(int(random.random() * width), int(random.random() * height)) for i in range(numPoints)]
+    events = [(point[0], point[1], 's') for point in points]
+    heapq.heapify(events)
 generatePoints()
 
-heapq.heapify(points)
-print points
+print events
 EPSILON = 0.005
 
 pygame.key.set_repeat(100,30)
-def input(events):
+def input(pyevents):
     global scanline
-    for event in events:
+    for event in pyevents:
         if event.type == QUIT:
             sys.exit(0)
         elif event.type == KEYDOWN:
@@ -53,33 +56,54 @@ def input(events):
         else:
             pass
 
+beach = []
 def generate_diagram():
-    global scanline, screen, width, height, points
+    global scanline, screen, width, height, events, points
     v.ly = scanline
 #    point = (250,300)
     screen.fill((0,0,0))
     vertices = []
     #draw the line
     pygame.draw.line(screen, (128,0,0), (0, scanline), (width, scanline))
+    circles = []
+    currentPoint = 0
+    prev = None
+    prevPrev = None
     for point in points:
         py, px = point
         pygame.draw.circle(screen, (128,128,128), (px, py), 3)
-        if py < scanline:
-            #draw the arc
+
+
+        if py == scanline:
+            pygame.draw.line(screen, (255,255,255), (px, scanline), (px, 0))
+        elif py < scanline:
+            if prev and prevPrev:
+                c = circle.Circle(prev, prevPrev, (px, py))
+                circles.append(c)
+            prevPrev = prev
+            prev = (px, py)
+
             arc = []
             for x in range(width):
-                arcy = int(v.getY((px, py), x))
-                if arcy >= 0 and arcy < 500:
-                    arc.append((x, arcy))
+                arcy = v.getY((px, py), x)
+                arc.append((x, arcy))
             pygame.draw.lines(screen, (255,255,255), False, arc, 1)
 
+    for c in circles:
+        calculated = c.CalcCircle()
+        if calculated:
+            cx, cy, r = calculated
+            pygame.draw.circle(screen, (200, 200, 200), (int(cx), int(cy)), int(r), 1)
 
-
-
-
-
-
-
+#    while len(events) != 0:
+#        smallest = heapq.heappop(events)
+#        ey, ex, etype = smallest
+#        if etype == 's':
+#            #site event
+#            pass
+#        else:
+#            #circle/vertex event
+#            pass
 
 
 while True:
