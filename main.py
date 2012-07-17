@@ -25,9 +25,11 @@ numPoints = 12
 events = []
 points = []
 #points are y,x so they can be ordered by heapq
+def randColour():
+    return (int(random.random() * 255), int(random.random() * 255), int(random.random() * 255))
 def generatePoints():
     global events, points
-    points = [(int(random.random() * width), int(random.random() * height)) for i in range(numPoints)]
+    points = [(int(random.random() * width), int(random.random() * height), randColour()) for i in range(numPoints)]
     events = [(point[0], point[1], 's') for point in points]
     heapq.heapify(events)
 generatePoints()
@@ -37,7 +39,7 @@ EPSILON = 0.005
 
 pygame.key.set_repeat(100,30)
 def input(pyevents):
-    global scanline
+    global scanline,pygame
     for event in pyevents:
         if event.type == QUIT:
             sys.exit(0)
@@ -53,6 +55,8 @@ def input(pyevents):
                 scanline = 0
             elif scanline < 0:
                 scanline = 500
+            generate_diagram()
+            pygame.display.update()
         else:
             pass
 
@@ -70,30 +74,30 @@ def generate_diagram():
     prev = None
     prevPrev = None
     for point in points:
-        py, px = point
-        pygame.draw.circle(screen, (128,128,128), (px, py), 3)
-
-
+        py, px, pColour = point
         if py == scanline:
-            pygame.draw.line(screen, (255,255,255), (px, scanline), (px, 0))
+            pygame.draw.line(screen, pColour, (px, scanline), (px, 0))
         elif py < scanline:
+            arc = []
+            for x in range(width):
+                arcy = v.getY((px, py), x)
+                arc.append((x, arcy))
+            pygame.draw.lines(screen, pColour, False, arc, 1)
+        if py <= scanline:
             if prev and prevPrev:
                 c = circle.Circle(prev, prevPrev, (px, py))
                 circles.append(c)
             prevPrev = prev
             prev = (px, py)
 
-            arc = []
-            for x in range(width):
-                arcy = v.getY((px, py), x)
-                arc.append((x, arcy))
-            pygame.draw.lines(screen, (255,255,255), False, arc, 1)
-
     for c in circles:
         calculated = c.CalcCircle()
         if calculated:
             cx, cy, r = calculated
             pygame.draw.circle(screen, (200, 200, 200), (int(cx), int(cy)), int(r), 1)
+    for point in points:
+        py, px, pColour = point
+        pygame.draw.circle(screen, pColour, (px, py), 3)
 
 #    while len(events) != 0:
 #        smallest = heapq.heappop(events)
@@ -109,8 +113,8 @@ def generate_diagram():
 while True:
     input(pygame.event.get())
     clock.tick(30)
-    generate_diagram()
-    pygame.display.update()
+
+
 
 
 
