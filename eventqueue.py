@@ -12,6 +12,15 @@ class EventQueue:
             self._q[event.y].append(event)
         except exceptions.KeyError:
             self._q[event.y] = [event]
+    def remove(self, event):
+        try:
+            for i in range(len(self._q[event.y])):
+                if self._q[event.y][i] == event:
+                    self._q[event.y].pop(i)
+        except exceptions.KeyError:
+            return None
+        except exceptions.IndexError:
+            return None
     def pop(self, y):
         try:
             return self._q[y].pop()

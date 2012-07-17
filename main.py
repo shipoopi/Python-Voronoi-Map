@@ -80,7 +80,7 @@ def generate_diagram():
         elif py < scanline:
             arc = []
             for x in range(width):
-                arcy = v.getY((px, py), x)
+                arcy = v._getY((px, py), x)
                 arc.append((x, arcy))
             pygame.draw.lines(screen, pColour, False, arc, 1)
         if py <= scanline:

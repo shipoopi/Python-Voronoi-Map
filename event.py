@@ -17,6 +17,10 @@ class Event:
 
         self.arch = None
         self.value = 0
+    def __eq__(self, other):
+        if self.y == other.y and self.key == other.key:
+            return True
+        return False
     def compare(self, other):
         if self.y > other.y:
             return True
