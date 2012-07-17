@@ -40,7 +40,7 @@ class Voronoi:
             place.cell = cell
             self.queue.push(ev)
         while not self.queue.isEmpty():
-            e = self.queue.pop()
+            e = self.queue.pop(None)
             self.ly = e.y
             if e.pe:
                 self.insertParabola(e.point)
@@ -51,7 +51,8 @@ class Voronoi:
         for edge in self.edges:
             #TODO:  continue on Voronoi.prototype.Compute
             # from http://blog.ivank.net/voronoi-diagram-in-javascript.html
-            pass
+            if edge.neighbor:
+                edge.start = edge.neighbor.end
 
     def insertParabola(self, p):
         if not self.root:

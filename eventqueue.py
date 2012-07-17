@@ -22,6 +22,18 @@ class EventQueue:
         except exceptions.IndexError:
             return None
     def pop(self, y):
+        if not y:
+            #pick the first
+            if len(self._q) == 0:
+                return None
+            try:
+                for key in self._q.keys():
+                    return self._q[key].pop()
+                return None
+            except exceptions.KeyError:
+                return None
+            except exceoptions.IndexError:
+                return None
         try:
             return self._q[y].pop()
         except exceptions.KeyError:
