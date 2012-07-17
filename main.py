@@ -108,7 +108,8 @@ def generate_diagram():
 #        else:
 #            #circle/vertex event
 #            pass
-
+generate_diagram()
+pygame.display.update()
 
 while True:
     input(pygame.event.get())
