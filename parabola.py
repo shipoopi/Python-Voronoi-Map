@@ -4,10 +4,11 @@ class Parabola:
     def __init__(self, site):
         self.event = None
         self.parent = None
-        self._left = None
-        self._right = None
+        self.left = None
+        self.right = None
         self.site = site
-        self.isLeaf = not self.site
+        self.isLeaf = self.site != None
+        edge = None
     def __eq__(self, other):
         if isinstance(other, self.__class__):
             if self.event == other.event:
@@ -17,12 +18,12 @@ class Parabola:
     def __ne__(self, other):
         return not self.__eq__(other)
     def getLeft(self):
-        return self._left
+        return self.left
     def getRight(self):
-        return self._right
+        return self.right
     def setLeft(self, p):
-        self._left = p
+        self.left = p
         p.parent = self
     def setRight(self, p):
-        self._right = p
+        self.right = p
         p.parent = self

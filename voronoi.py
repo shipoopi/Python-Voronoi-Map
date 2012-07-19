@@ -1,6 +1,6 @@
 __author__ = 'sean'
 
-import heapq, event, polygon, eventqueue, parabola, point, math
+import heapq, event, polygon, eventqueue, parabola, point, math, exceptions
 from point import Point
 from edge import Edge
 
@@ -47,6 +47,7 @@ class Voronoi:
             print "e: ", e
             self.ly = e.y
             if e.pe:
+                print "inserting parabola for: ", e.point
                 self.insertParabola(e.point)
             else:
                 self.removeParabola(e)
@@ -63,9 +64,9 @@ class Voronoi:
             self.fp = p
             return
         if self.root.isLeaf and self.root.site.y - p.y < 0.01:
-            self.root.isLeaf = false
-            self.root.left = parabola.Parabola(self.fp)
-            self.root.right = parabola.Parabola(p)
+            self.root.isLeaf = False
+            self.root.setLeft(parabola.Parabola(self.fp))
+            self.root.setRight(parabola.Parabola(p))
             s = Point((p.x + self.fp.x) / 2.0, self.height)
             if p.x > self.fp.x:
                 self.root.edge = Edge(s, self.fp, p)
@@ -89,14 +90,14 @@ class Voronoi:
 
         p0 = parabola.Parabola(par.site)
         p1 = parabola.Parabola(p)
-        p2 = Parabola.Parabola(par.site)
+        p2 = parabola.Parabola(par.site)
 
-        par.right = p2
-        par.left = Parabola(None)
+        par.setRight(p2)
+        par.setLeft(parabola.Parabola(None))
         par.left.edge = e1
 
-        par.left.left = p0
-        par.left.right = p1
+        par.left.setLeft(p0)
+        par.left.setRight(p1)
 
         self.checkCircle(p1)
         self.checkCircle(p2)
@@ -105,6 +106,7 @@ class Voronoi:
     def checkCircle(self, p):
         lp = self.getLeftParent(p)
         rp = self.getRightParent(p)
+        print "lp: ", lp, " rp: ", rp
 
         a = self.getLeftChild(lp)
         c = self.getRightChild(rp)
@@ -139,13 +141,19 @@ class Voronoi:
     def getParabolaByX(self, xx):
         par = self.root
         x = 0
-        while not par.isLeaf:
-            x = self.getXofEdge(par, self.ly)
-            if x > xx:
-                par = par.left
-            else:
-                par = par.right
-        return par
+        if not par.left and not par.right:
+            return par
+        try:
+            while not par.isLeaf:
+                x = self.getXofEdge(par, self.ly)
+                if x > xx:
+                    par = par.left
+                else:
+                    par = par.right
+        except exceptions.AttributeError:
+            pass
+        finally:
+            return par
 
     def getXofEdge(self, par, y):
         left = self.getLeftChild(par)
@@ -172,6 +180,7 @@ class Voronoi:
         x2 = (-1.0 * b - math.sqrt(disc)) / (2.0 * a)
 
         ry = None
+        print "x1,x2: %d, %d" % (x1, x2)
         if p.y < r.y:
             ry = max((x1, x2))
         else:
@@ -219,14 +228,14 @@ class Voronoi:
         gparent = p1.parent.parent
         if p1.parent.left == p1:
             if gparent.left == p1.parent:
-                gparent.left = p1.parent.right
+                gparent.setLeft(p1.parent.right)
             else:
-                p1.parent.parent.right = p1.parent.right
+                p1.parent.parent.setRight(p1.parent.right)
         else:
             if gparent.left == p1.parent:
-                gparent.left = p1.parent.left
+                gparent.setLeft(p1.parent.left)
             else:
-                gparent.right = p1.parent.left
+                gparent.setRight(p1.parent.left)
         self.checkCircle(p0)
         self.checkCircle(p2)
 
@@ -238,8 +247,8 @@ class Voronoi:
         else:
             mx = min((0.0, n.edge.start.x - 10))
         n.edge.end = Point(mx, n.edge.f*mx + n.edge.g)
-
-        if not n.leaf.isLeaf:
+        print "n: ", n
+        if not n.left.isLeaf:
             self.finishEdge(n.left)
         if not n.right.isLeaf:
             self.finishEdge(n.right)
@@ -282,17 +291,27 @@ class Voronoi:
     def getLeftChild(self, n):
         if not n:
             return None
+        print "n: ", n
         par = n.left
-        while not par.isLeaf:
-            par = par.right
-        return par
+        print "par: ", par
+        try:
+            while not par.isLeaf:
+                par = par.right
+        except exceptions.AttributeError:
+            pass
+        finally:
+            return par
     def getRightChild(self, n):
         if not n:
             return None
         par = n.right
-        while not par.isLeaf:
-            par = par.left
-        return par
+        try:
+            while not par.isLeaf:
+                par = par.left
+        except exceptions.AttributeError:
+            pass
+        finally:
+            return par
     def getLineIntersection(self, a1, a2, b1, b2):
         dax = a1.x - a2.x
         dbx = b1.x - b2.x
