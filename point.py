@@ -16,6 +16,8 @@ class Point:
             if difX > -1.0 * EPSILON and difX < EPSILON:
                 return True
         return False
+    def __str__(self):
+        return "[%d,%d]" % (self.x, self.y)
 
 def distance(a, b):
     return Math.sqrt((b.x - a.x) * (b.x - a.x) + (b.y - a.y) * (b.y-a.y))

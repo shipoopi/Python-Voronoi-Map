@@ -26,3 +26,5 @@ class Event:
             return True
         else:
             return False
+    def __str__(self):
+        return "%s %f" % (self.point, self.key)

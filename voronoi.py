@@ -1,6 +1,6 @@
 __author__ = 'sean'
 
-import heapq, event, polygon, eventqueue, parabola, point
+import heapq, event, polygon, eventqueue, parabola, point, math
 from point import Point
 from edge import Edge
 
@@ -34,23 +34,26 @@ class Voronoi:
         self.width = width
         self.height = height
         self._clearQueue()
-        for place in places:
+        for place in self.places:
             ev = event.Event(place, True)
+            print "event: %s" % ev
             cell = polygon.Polygon()
             place.cell = cell
             self.queue.push(ev)
+        loops = 0
         while not self.queue.isEmpty():
+            print "loop %d" % loops
             e = self.queue.pop(None)
+            print "e: ", e
             self.ly = e.y
             if e.pe:
                 self.insertParabola(e.point)
             else:
                 self.removeParabola(e)
             self.lasty = e.y
+            loops += 0
         self.finishEdge(self.root)
         for edge in self.edges:
-            #TODO:  continue on Voronoi.prototype.Compute
-            # from http://blog.ivank.net/voronoi-diagram-in-javascript.html
             if edge.neighbor:
                 edge.start = edge.neighbor.end
 
@@ -133,9 +136,47 @@ class Voronoi:
             return None
         return I
 
-    def getParabolaByX(self, x):
-        pass
-        #TODO:  define getParabolaByX
+    def getParabolaByX(self, xx):
+        par = self.root
+        x = 0
+        while not par.isLeaf:
+            x = self.getXofEdge(par, self.ly)
+            if x > xx:
+                par = par.left
+            else:
+                par = par.right
+        return par
+
+    def getXofEdge(self, par, y):
+        left = self.getLeftChild(par)
+        right = self.getRightChild(par)
+
+        p = left.site
+        r = right.site
+
+        dp = 2.0 * (p.y - y)
+        a1 = 1.0 / dp
+        b1 = -2.0 * p.x / dp
+        c1 = y+dp * 0.25 + p.x * p.x / dp
+        dp = 2.0 * (r.y - y)
+        a2 = 1.0/dp
+        b2 = -2.0 * r.x / dp
+        c2 = y+dp * 0.25 + r.x * r.x / dp
+
+        a = a1-a2
+        b = b1-b2
+        c = c1-c2
+
+        disc = b*b - 4 * a * c
+        x1 = (-1.0 * b + math.sqrt(disc)) / (2.0 * a)
+        x2 = (-1.0 * b - math.sqrt(disc)) / (2.0 * a)
+
+        ry = None
+        if p.y < r.y:
+            ry = max((x1, x2))
+        else:
+            ry = min((x1, x2))
+        return ry
 
     def removeParabola(self, e):
         p1 = e.arch

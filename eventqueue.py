@@ -22,17 +22,22 @@ class EventQueue:
         except exceptions.IndexError:
             return None
     def pop(self, y):
+        print "queue: %s" % self._q
         if not y:
             #pick the first
             if len(self._q) == 0:
+                print "queue is empty, can't pop"
                 return None
             try:
                 for key in self._q.keys():
-                    return self._q[key].pop()
+                    if len(self._q[key]) > 0:
+                        return self._q[key].pop()
                 return None
-            except exceptions.KeyError:
+            except exceptions.KeyError as e:
+                print "key error"
                 return None
-            except exceoptions.IndexError:
+            except exceptions.IndexError as e:
+                print "index error (%d): %s" % (key, str(e))
                 return None
         try:
             return self._q[y].pop()
