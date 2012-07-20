@@ -1,6 +1,6 @@
 __author__ = 'sean'
 
-import heapq, event, polygon, eventqueue, parabola, point, math, exceptions
+import heapq, event, polygon, eventqueue, parabola, point, math, exceptions,sys
 from point import Point
 from edge import Edge
 from pygame.locals import *
@@ -44,13 +44,12 @@ class Voronoi:
         for place in self.places:
             ev = event.Event(place, True)
             print "event: %s" % ev
-            cell = polygon.Polygon(place)
-            place.cell = cell
+            cell = polygon.Polygon()
             self.queue.push(ev)
-            self.cells.append(cell)
         loops = 0
         print "queue before starting: ", self.queue
         while not self.queue.isEmpty():
+            self.loopUntilReady()
             print "loop %d (%d)" % (loops, self.ly)
             e = self.queue.pop(None)
             print "queue after pop: %s" % self.queue
@@ -249,8 +248,9 @@ class Voronoi:
                 p1.site.cell.addLeft(p)
             else:
                 p1.site.cell.addRight(p)
-            p0.site.cell.addRight(p)
-            p2.site.cell.addLeft(p)
+        p0.site.cell.addRight(p)
+        p2.site.cell.addLeft(p)
+
 
         self.lasty = e.point.y
 
@@ -301,7 +301,8 @@ class Voronoi:
 
     def _getY(self, p, x):
         """deprected"""
-        px, py = p
+        px = p.x
+        py = p.y
         dp = 2.0 * (py - self.ly)
         a1 = 1.0 / dp
         b1 = -2.0 * px / dp
@@ -386,12 +387,6 @@ class Voronoi:
         if p.right:
             print padding + "right:"
             self.printTree(p.right, depth+1)
-#    def input(self, pyevents):
-#        for event in pyevents:
-#            if event.type == QUIT:
-#                sys.exit(0)
-#            elif event.type == KEYDOWN:
-#                if event.key == K_SPACE:
 #
     def numAligned(self, p):
         numAligned = 0
@@ -401,12 +396,59 @@ class Voronoi:
         print "numAligned: %d" % numAligned
         return numAligned
 
-    def drawFunction(self, p):
+    def loopUntilReady(self):
+        self.drawFunction()
         screen = self.screen
         pygame = self.pygame
-        for cell in self.cells:
+        clock = self.clock
+        ready = False
+        while not ready:
+            for e in pygame.event.get():
+                if e.type == QUIT:
+                    sys.exit(0)
+                elif e.type == KEYDOWN:
+                    ready = True
+            clock.tick(30)
+    def drawTree(self, p):
+        if p.isLeaf:
+            screen = self.screen
+            width = screen.get_width()
+            height = screen.get_height()
+            pygame = self.pygame
+            if p.site.y == self.ly:
+                #draw a line going straight up (degenerate parabola)
+                pass
+            else:
+                #draw the full parabola
+                arc = []
+                for x in range(width):
+                    y = self.getY(p.site, x)
+                    print "[%d,%d]" % (x,y)
+                    arc.append((x,y))
+                pygame.draw.lines(screen, (200,200,200), False, arc, 1)
+
+
+        else:
+            if p.left:
+                self.drawTree(p.left)
+            if p.right:
+                self.drawTree(p.right)
+    def drawFunction(self):
+        screen = self.screen
+        width = screen.get_width()
+        height = screen.get_height()
+        screen.fill((0,0,0))
+        pygame = self.pygame
+        pygame.draw.line(screen, (128,0,0), (0,self.ly), (width, self.ly))
+        for place in self.places:
             color = (128,128,128)
-            if p == cell.place:
-                color = (255, 0, 0)
-            pygame.draw.circle(screen, color, (int(cell.place.x), int(cell.place.y)), 5)
-            pygame.display.update()
+            pygame.draw.circle(screen, color, (int(place.x), int(place.y)), 3)
+        allEvents = self.queue.getAll()
+        for e in allEvents:
+            color = (0,255,0)
+            pygame.draw.circle(screen, color, (int(e.point.x), int(e.point.y)), 3)
+        #now walk the tree
+        if self.root:
+            self.drawTree(self.root)
+
+        pygame.display.update()

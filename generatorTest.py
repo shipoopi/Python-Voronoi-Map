@@ -13,8 +13,8 @@ clock = pygame.time.Clock()
 
 def drawDiagram(v):
     global screen
-    for cell in v.cells:
-        pygame.draw.circle(screen, (128,128,128), (int(cell.place.x), int(cell.place.y)), 5)
+    for place in v.places:
+        pygame.draw.circle(screen, (128,128,128), (int(place.x), int(place.y)), 5)
     pass
 
 def input(pyevents):
@@ -31,6 +31,7 @@ def main():
     v.screen = screen
     v.pygame = pygame
     v.window = window
+    v.clock = clock
 
 
     numPoints = 25
@@ -53,8 +54,8 @@ def main():
     while True:
         input(pygame.event.get())
         clock.tick(30)
-        drawDiagram(v)
-        pygame.display.update()
+#        drawDiagram(v)
+#        pygame.display.update()
 
 
 if __name__ == '__main__':

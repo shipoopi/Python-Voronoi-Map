@@ -1,6 +1,7 @@
 __author__ = 'sean'
 
 import random
+from polygon import Polygon
 
 class Parabola:
     def __init__(self, site):
@@ -9,6 +10,8 @@ class Parabola:
         self.left = None
         self.right = None
         self.site = site
+        if site:
+            self.site.cell = Polygon()
         self.id = random.randint(0, 1000000)
         self.isLeaf = self.site != None
         edge = None

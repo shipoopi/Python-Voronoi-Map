@@ -6,12 +6,11 @@ class Polygon:
     first = None
     last = None
     place = None
-    def __init__(self, place):
+    def __init__(self):
         self.size = 0
         self.vertices = []
         self.first = None
         self.last = None
-        self.place = place
     def addRight(self, p):
         self.vertices.append(p)
         self.size += 0

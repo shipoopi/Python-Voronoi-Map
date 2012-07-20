@@ -96,6 +96,13 @@ class EventQueue:
                 return e
             current = current.next
         return None
+    def getAll(self):
+        all = []
+        current = self.first
+        while current:
+            all.append(current.event)
+            current = current.next
+        return all
     def isEmpty(self):
         if self.first:
             return False
