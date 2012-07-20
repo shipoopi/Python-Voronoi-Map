@@ -50,7 +50,6 @@ class Voronoi:
         loops = 0
         while not self.queue.isEmpty():
             print "loop %d (%d)" % (loops, self.ly)
-            print self.queue._q
             e = self.queue.pop(None)
             print "e: ", e
             self.ly = e.y
