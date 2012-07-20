@@ -3,6 +3,7 @@ __author__ = 'sean'
 import heapq, event, polygon, eventqueue, parabola, point, math, exceptions
 from point import Point
 from edge import Edge
+from pygame.locals import *
 
 class Voronoi:
     places = None
@@ -13,6 +14,12 @@ class Voronoi:
     height = 0
     root = None
     edges = []
+
+    #pygame variables
+    pygame = None
+    screen = None
+    clock = None
+    window = None
 
     ly = 0
     lasty = 0
@@ -42,7 +49,8 @@ class Voronoi:
             self.queue.push(ev)
         loops = 0
         while not self.queue.isEmpty():
-            print "loop %d" % loops
+            print "loop %d (%d)" % (loops, self.ly)
+            print self.queue._q
             e = self.queue.pop(None)
             print "e: ", e
             self.ly = e.y
@@ -173,6 +181,10 @@ class Voronoi:
 
         p = left.site
         r = right.site
+        if p.y == y:
+            return p.x
+        elif r.y == y:
+            return r.x
         print "p: %s, r: %s" % (p, r)
 
         dp = 2.0 * (p.y - y)
@@ -361,3 +373,10 @@ class Voronoi:
         if p.right:
             print padding + "right:"
             self.printTree(p.right, depth+1)
+#    def input(self, pyevents):
+#        for event in pyevents:
+#            if event.type == QUIT:
+#                sys.exit(0)
+#            elif event.type == KEYDOWN:
+#                if event.key == K_SPACE:
+#

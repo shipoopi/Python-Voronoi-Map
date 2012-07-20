@@ -22,6 +22,9 @@ class Point:
     def copy(self):
         new = Point(self.x, self.y)
         return new
+    def __eq__(self, other):
+        if self.x == other.x and self.y == other.y:
+            return True
 
 def distance(a, b):
     return math.sqrt((b.x - a.x) * (b.x - a.x) + (b.y - a.y) * (b.y-a.y))
