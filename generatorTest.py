@@ -35,15 +35,16 @@ def main():
 
     numPoints = 25
     places = []
-    for i in range(numPoints):
+    while len(places) < 25:
         randPoint = None
         while not randPoint:
             randPoint = point.Point(random.randint(0, width), random.randint(0,width))
             for existingPoint in places:
-                if existingPoint == randPoint:
+                if existingPoint.y == randPoint.y:
                     randPoint = None
                     break
-            places.append(randPoint)
+            if randPoint:
+                places.append(randPoint)
 #    places = [point.Point(random.randint(0, width), random.randint(0,width)) for i in range(numPoints)]
     computed = v.Compute(places, width, height)
     print "finished computing: ", v.cells

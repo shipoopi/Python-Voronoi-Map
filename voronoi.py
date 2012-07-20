@@ -117,11 +117,11 @@ class Voronoi:
         par.left.setLeft(p0)
         par.left.setRight(p1)
 
-        self.checkCircle(p1)
-        self.checkCircle(p2)
+        self.checkCircle(p0)
         self.checkCircle(p2)
 
     def checkCircle(self, p):
+        print "checking circle for: %s" % p
         lp = self.getLeftParent(p)
         rp = self.getRightParent(p)
         print "lp: ", lp, " rp: ", rp
@@ -130,6 +130,7 @@ class Voronoi:
         c = self.getRightChild(rp)
 
         if not a or not c or a.site == c.site:
+            print "not a or not c or a.site == c.site"
             return None
 
         s = self.getEdgeIntersection(lp.edge, rp.edge)
@@ -138,6 +139,7 @@ class Voronoi:
             return None
         d = point.distance(a.site, s)
         if s.y - d >= self.ly:
+            print "s.y - d >= self.ly"
             return None
 
         e = event.Event(Point(s.x, s.y - d), False)
@@ -178,39 +180,46 @@ class Voronoi:
         return par
 
     def getXofEdge(self, par, y):
-        print "getXofEdge: ", par, y
+#        print "getXofEdge: ", par, y
         left = self.getLeftChild(par)
         right = self.getRightChild(par)
 
         p = left.site
         r = right.site
-        if p.y == y:
-            return p.x
-        elif r.y == y:
-            return r.x
-        print "p: %s, r: %s" % (p, r)
+#        if p.y == y:
+#            return p.x
+#        elif r.y == y:
+#            return r.x
+#        print "p: %s, r: %s" % (p, r)
 
-        dp = 2.0 * (p.y - y)
+        dp = 2.0 * (float(p.y) - float(y))
+        if dp == 0:
+            #degenerate parabola
+            return p.x
+        print "dp: %f" % dp
         a1 = 1.0 / dp
         b1 = -2.0 * p.x / dp
         c1 = y+dp * 0.25 + p.x * p.x / dp
-        dp = 2.0 * (r.y - y)
-        a2 = 1.0/dp
+        dp = 2.0 * (float(r.y) - float(y))
+        if dp == 0:
+            #degenerate parabola
+            return r.x
+        a2 = 1.0 / dp
         b2 = -2.0 * r.x / dp
         c2 = y+dp * 0.25 + r.x * r.x / dp
 
         a = a1-a2
         b = b1-b2
         c = c1-c2
-        print "a,b,c: [%f, %f, %f]" % (a,b,c)
+#        print "a,b,c: [%f, %f, %f]" % (a,b,c)
 
         disc = b*b - 4.0 * a * c
-        print "disc: %f" % disc
+#        print "disc: %f" % disc
         x1 = (-1.0 * b + math.sqrt(disc)) / (2.0 * a)
         x2 = (-1.0 * b - math.sqrt(disc)) / (2.0 * a)
 
         ry = None
-        print "x1,x2: %d, %d" % (x1, x2)
+#        print "x1,x2: %d, %d" % (x1, x2)
         if p.y < r.y:
             ry = max((x1, x2))
         else:
@@ -218,6 +227,7 @@ class Voronoi:
         return ry
 
     def removeParabola(self, e):
+        print "removing parabola"
         p1 = e.arch
 
         x1 = self.getLeftParent(p1)
@@ -351,7 +361,7 @@ class Voronoi:
         dby = b1.y - b2.y
 
         Den = dax*dby - day*dbx
-        if Den < point.EPSILON and Den > 0 - point.EPSILON:
+        if Den == 0:
             print "parallel lines"
             return None #parallel
         A = (a1.x * a2.y - a1.y * a2.x)
@@ -383,3 +393,20 @@ class Voronoi:
 #            elif event.type == KEYDOWN:
 #                if event.key == K_SPACE:
 #
+    def numAligned(self, p):
+        numAligned = 0
+        for place in self.places:
+            if p.y == place.y:
+                numAligned += 1
+        print "numAligned: %d" % numAligned
+        return numAligned
+
+    def drawFunction(self, p):
+        screen = self.screen
+        pygame = self.pygame
+        for cell in self.cells:
+            color = (128,128,128)
+            if p == cell.place:
+                color = (255, 0, 0)
+            pygame.draw.circle(screen, color, (int(cell.place.x), int(cell.place.y)), 5)
+            pygame.display.update()

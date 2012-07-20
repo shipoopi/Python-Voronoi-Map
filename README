@@ -6,6 +6,7 @@ http://www-cs-students.stanford.edu/~amitp/game-programming/polygon-map-generati
 
 This code is protected under the GNU General Public License Version 3 which can be read in gpl.txt
 
-SOURCES:
-javascript voronoi:
+Based heavily on the source code from:
     http://blog.ivank.net/voronoi-diagram-in-javascript.html
+
+Run generatorTest.py to see it in action
