@@ -8,6 +8,8 @@ def main():
     numPoints = 25
     places = [point.Point(random.randint(0, width), random.randint(0,width)) for i in range(numPoints)]
     computed = v.Compute(places, width, height)
+    print "finished computing: ", v.cells
+
 
 if __name__ == '__main__':
     main()

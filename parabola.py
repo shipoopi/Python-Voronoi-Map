@@ -1,5 +1,7 @@
 __author__ = 'sean'
 
+import random
+
 class Parabola:
     def __init__(self, site):
         self.event = None
@@ -7,14 +9,19 @@ class Parabola:
         self.left = None
         self.right = None
         self.site = site
+        self.id = random.randint(0, 1000000)
         self.isLeaf = self.site != None
         edge = None
     def __eq__(self, other):
-        if isinstance(other, self.__class__):
-            if self.event == other.event:
-                return self.__dict__ == other.__dict__
+        if self.id == other.id:
+            return True
         else:
             return False
+    def __str__(self):
+        isLeaf = ""
+        if self.isLeaf:
+            isLeaf = 'leaf'
+        return "Parabola: %d (%s) %s" % (self.id, self.site, isLeaf)
     def __ne__(self, other):
         return not self.__eq__(other)
     def getLeft(self):

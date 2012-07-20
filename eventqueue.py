@@ -45,6 +45,15 @@ class EventQueue:
             return None
         except exceptions.IndexError:
             return None
+    def remove(self, par):
+        found = -1
+        for i in range(len(self._q[par.y])):
+            if self._q[par.y][i].key == par.key:
+                found = i
+                break
+        if found > 0:
+            self._q[par.y].pop(found)
+
     def isEmpty(self):
         for key in self._q.keys():
             if len(self._q[key]) > 0:
