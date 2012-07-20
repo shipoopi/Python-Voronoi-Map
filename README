@@ -9,3 +9,8 @@ Run generatorTest.py to see it in action
 
 Don't generate any sites that share a y value in order to avoid problems with finite arithmetic
     (division by zero in various calculations)
+
+requires pygame in order to rendering example diagrams.  This can be easily changed if needed.
+I wrote this for Python 2.7.  It's untested on other versions.
+get pygame from www.pygame.org or if you're on Ubuntu:
+    sudo apt-get install python-pygame
