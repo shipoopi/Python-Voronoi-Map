@@ -10,3 +10,6 @@ Based heavily on the source code from:
     http://blog.ivank.net/voronoi-diagram-in-javascript.html
 
 Run generatorTest.py to see it in action
+
+Don't generate any sites that share a y value in order to avoid problems with finite arithmetic
+    (division by zero in various calculations)
