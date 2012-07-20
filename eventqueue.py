@@ -12,13 +12,21 @@ class Node:
         self.Next = None
         self.Prev = None
     def __str__(self):
-        return "y: %d [%s]" % (self.y, self.event)
+        return "[Node: y: %d [%s]]" % (self.y, self.event)
 
 
 class EventQueue:
     first = None
     def __init__(self):
         self.first = None
+    def __str__(self):
+        output = "["
+        current = self.first
+        while current:
+            output += str(current)+","
+            current = current.next
+        output += "]";
+        return output
     def push(self, event):
         new = Node(event)
         if not self.first:
@@ -47,9 +55,6 @@ class EventQueue:
                     current.prev = new
                     return
             current = current.next
-
-
-
     def remove(self, event):
         current = self.first
         while current:
@@ -66,7 +71,7 @@ class EventQueue:
         if not self.first:
             return None
         if y == None:
-            #pop the first
+            print "pop the first"
             inty = self.first.y
         else:
             inty = int(y)
@@ -75,18 +80,22 @@ class EventQueue:
         while current:
             print "current: %s" % current
             if current.y == inty:
-                if self.first.event == current.event:
-                    self.first = None
+                if current.next:
+                    current.next.prev = current.prev
                 if current.prev:
                     current.prev.next = current.next
-                current.next.prev = current.prev
+                #node is removed from chain
+                if current == self.first:
+                    #set a new first
+                    if current.prev:
+                        self.first = current.prev
+                    else:
+                        self.first = current.next
                 e = current.event
                 del(current) #prevent memory leak
                 return e
             current = current.next
         return None
-
-
     def isEmpty(self):
         if self.first:
             return False

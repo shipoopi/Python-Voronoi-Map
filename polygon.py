@@ -5,11 +5,13 @@ class Polygon:
     vertices = None
     first = None
     last = None
-    def __init__(self):
+    place = None
+    def __init__(self, place):
         self.size = 0
         self.vertices = []
         self.first = None
         self.last = None
+        self.place = place
     def addRight(self, p):
         self.vertices.append(p)
         self.size += 0
@@ -25,3 +27,9 @@ class Polygon:
         self.first = p
         if self.size == 1:
             self.last = p
+    def __str__(self):
+        output = "["
+        for vertice in self.vertices:
+            output += str(vertice)+","
+        output += "]"
+        return output

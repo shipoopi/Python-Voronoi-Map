@@ -44,13 +44,16 @@ class Voronoi:
         for place in self.places:
             ev = event.Event(place, True)
             print "event: %s" % ev
-            cell = polygon.Polygon()
+            cell = polygon.Polygon(place)
             place.cell = cell
             self.queue.push(ev)
+            self.cells.append(cell)
         loops = 0
+        print "queue before starting: ", self.queue
         while not self.queue.isEmpty():
             print "loop %d (%d)" % (loops, self.ly)
             e = self.queue.pop(None)
+            print "queue after pop: %s" % self.queue
             print "e: ", e
             self.ly = e.y
             if e.pe:
@@ -62,6 +65,7 @@ class Voronoi:
                 self.removeParabola(e)
             self.lasty = e.y
             loops += 0
+        print "finishing edge for: " , self.root
         self.finishEdge(self.root)
         for edge in self.edges:
             if edge.neighbor:
