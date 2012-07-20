@@ -43,27 +43,22 @@ class Voronoi:
         self._clearQueue()
         for place in self.places:
             ev = event.Event(place, True)
-            print "event: %s" % ev
             cell = polygon.Polygon()
             self.queue.push(ev)
         loops = 0
-        print "queue before starting: ", self.queue
         while not self.queue.isEmpty():
             self.loopUntilReady()
             print "loop %d (%d)" % (loops, self.ly)
             e = self.queue.pop(None)
-            print "queue after pop: %s" % self.queue
-            print "e: ", e
             self.ly = e.y
             if e.pe:
-                print "inserting parabola for: ", e.point
-                if self.root:
-                    self.printTree(self.root, 0)
                 self.insertParabola(e.point)
             else:
                 self.removeParabola(e)
             self.lasty = e.y
-            loops += 0
+            if self.root:
+                self.printTree(self.root, 0)
+            loops += 1
         print "finishing edge for: " , self.root
         self.finishEdge(self.root)
         for edge in self.edges:
@@ -72,7 +67,6 @@ class Voronoi:
 
     def insertParabola(self, p):
         if not p:
-            print "p is None"
             raise Exception("p is None")
             exit(-1)
         if not self.root:
@@ -90,7 +84,6 @@ class Voronoi:
                 self.root.edge = Edge(s, p, self.fp.copy())
             return
         par = self.getParabolaByX(p.x)
-        print "parByX: ", par
         if par.event:
             self.queue.remove(par.event)
             par.event = None
@@ -115,15 +108,15 @@ class Voronoi:
 
         par.left.setLeft(p0)
         par.left.setRight(p1)
-
+        print "checking circles"
         self.checkCircle(p0)
         self.checkCircle(p2)
 
     def checkCircle(self, p):
-        print "checking circle for: %s" % p
+        print "checking circle for: %s" % p.site
         lp = self.getLeftParent(p)
         rp = self.getRightParent(p)
-        print "lp: ", lp, " rp: ", rp
+        print "lp: %s, rp: %s" % (lp, rp)
 
         a = self.getLeftChild(lp)
         c = self.getRightChild(rp)
@@ -134,11 +127,10 @@ class Voronoi:
 
         s = self.getEdgeIntersection(lp.edge, rp.edge)
         if not s:
-            print "no edge intersection"
+            print "not s"
             return None
         d = point.distance(a.site, s)
         if s.y - d >= self.ly:
-            print "s.y - d >= self.ly"
             return None
 
         e = event.Event(Point(s.x, s.y - d), False)
@@ -147,14 +139,9 @@ class Voronoi:
         self.queue.push(e)
 
     def getEdgeIntersection(self, a, b):
-        print "getting intersection for:"
-        print a, b
-        print a.start, a.B, b.start, b.B
-        print a.direction, b.direction
         I = self.getLineIntersection(a.start, a.B, b.start, b.B)
         if not I:
             return None
-        print "I: ", I
         #wrong direction of edge
         wd = (I.x - a.start.x) * a.direction.x < 0 or \
                 (I.y - a.start.y) * a.direction.y < 0 or \
@@ -171,7 +158,6 @@ class Voronoi:
             return par
         while not par.isLeaf:
             x = self.getXofEdge(par, self.ly)
-            print "xByEdge (%d): %f" % (self.ly, x)
             if x > xx:
                 par = par.left
             else:
@@ -179,29 +165,23 @@ class Voronoi:
         return par
 
     def getXofEdge(self, par, y):
-#        print "getXofEdge: ", par, y
         left = self.getLeftChild(par)
         right = self.getRightChild(par)
 
         p = left.site
         r = right.site
-#        if p.y == y:
-#            return p.x
-#        elif r.y == y:
-#            return r.x
-#        print "p: %s, r: %s" % (p, r)
 
         dp = 2.0 * (float(p.y) - float(y))
         if dp == 0:
+            print "degenerate parabola"
             #degenerate parabola
             return p.x
-        print "dp: %f" % dp
         a1 = 1.0 / dp
         b1 = -2.0 * p.x / dp
         c1 = y+dp * 0.25 + p.x * p.x / dp
         dp = 2.0 * (float(r.y) - float(y))
         if dp == 0:
-            #degenerate parabola
+            print "degenerate parabola"
             return r.x
         a2 = 1.0 / dp
         b2 = -2.0 * r.x / dp
@@ -210,15 +190,12 @@ class Voronoi:
         a = a1-a2
         b = b1-b2
         c = c1-c2
-#        print "a,b,c: [%f, %f, %f]" % (a,b,c)
 
         disc = b*b - 4.0 * a * c
-#        print "disc: %f" % disc
         x1 = (-1.0 * b + math.sqrt(disc)) / (2.0 * a)
         x2 = (-1.0 * b - math.sqrt(disc)) / (2.0 * a)
 
         ry = None
-#        print "x1,x2: %d, %d" % (x1, x2)
         if p.y < r.y:
             ry = max((x1, x2))
         else:
@@ -333,14 +310,11 @@ class Voronoi:
     def getLeftChild(self, n):
         if not n:
             return None
-        print "n: ", n
         par = n.left
-        print "par: ", par
         try:
             while not par.isLeaf:
                 par = par.right
         except exceptions.AttributeError:
-            print "attribute error in getLeftChild"
             pass
         finally:
             return par
@@ -363,7 +337,7 @@ class Voronoi:
 
         Den = dax*dby - day*dbx
         if Den == 0:
-            print "parallel lines"
+            print "parallel"
             return None #parallel
         A = (a1.x * a2.y - a1.y * a2.x)
         B = (b1.x * b2.y - b1.y * b2.x)
@@ -393,7 +367,6 @@ class Voronoi:
         for place in self.places:
             if p.y == place.y:
                 numAligned += 1
-        print "numAligned: %d" % numAligned
         return numAligned
 
     def loopUntilReady(self):
@@ -423,7 +396,6 @@ class Voronoi:
                 arc = []
                 for x in range(width):
                     y = self.getY(p.site, x)
-                    print "[%d,%d]" % (x,y)
                     arc.append((x,y))
                 pygame.draw.lines(screen, (200,200,200), False, arc, 1)
 
@@ -439,14 +411,24 @@ class Voronoi:
         height = screen.get_height()
         screen.fill((0,0,0))
         pygame = self.pygame
+        font = self.font
+
+
         pygame.draw.line(screen, (128,0,0), (0,self.ly), (width, self.ly))
         for place in self.places:
             color = (128,128,128)
             pygame.draw.circle(screen, color, (int(place.x), int(place.y)), 3)
+            textSurface = font.render(str(place), 1, color)
+            textPos = (int(place.x + 3),int(place.y))
+            screen.blit(textSurface, textPos)
+
+
         allEvents = self.queue.getAll()
-        for e in allEvents:
-            color = (0,255,0)
-            pygame.draw.circle(screen, color, (int(e.point.x), int(e.point.y)), 3)
+#        for e in allEvents:
+#            color = (0,255,0)
+#            if not e.pe:
+#                color = (255,0,0)
+#            pygame.draw.circle(screen, color, (int(e.point.x), int(e.point.y)), 3)
         #now walk the tree
         if self.root:
             self.drawTree(self.root)

@@ -32,11 +32,13 @@ def main():
     v.pygame = pygame
     v.window = window
     v.clock = clock
+    font = pygame.font.Font(None, 16)
+    v.font = font
 
 
-    numPoints = 25
+    numPoints = 12
     places = []
-    while len(places) < 25:
+    while len(places) < numPoints:
         randPoint = None
         while not randPoint:
             randPoint = point.Point(random.randint(0, width), random.randint(0,width))
