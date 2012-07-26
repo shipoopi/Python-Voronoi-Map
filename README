@@ -1,16 +1,16 @@
-This software was started by Sean Esopenko
+The porting of this library was started by Sean Esopenko
 
-This code is protected under the MIT which can be read in mit.txt (included)
+It's hosted at GitHub at https://github.com/sesopenko/Python-Voronoi-Map
 
-Based heavily on the source code from:
-    http://blog.ivank.net/voronoi-diagram-in-javascript.html
+This code is protected under the MIT license which can be read in mit.txt (included)
 
-Run generatorTest.py to see it in action
-
-Don't generate any sites that share a y value in order to avoid problems with finite arithmetic
-    (division by zero in various calculations)
-
-requires pygame in order to rendering example diagrams.  This can be easily changed if needed.
-I wrote this for Python 2.7.  It's untested on other versions.
-get pygame from www.pygame.org or if you're on Ubuntu:
-    sudo apt-get install python-pygame
+* Based heavily on the javascript source code written by Ivan Kuckir:
+** http://blog.ivank.net/voronoi-diagram-in-javascript.html
+* This library is not 100% functional yet.  The nuanced differences between javascript & python haven't yet been worked out.
+** Run generatorTest.py to see it in action.
+* Don't generate any sites that share a y value in order to avoid problems
+** (division by zero in various calculations)
+* requires pygame in order to rendering example diagrams.  This reliance will be removed once the library's finished.
+* I wrote this for Python 2.7.  It's untested on other versions.
+** get pygame from www.pygame.org or if you're on Ubuntu:
+*** sudo apt-get install python-pygame
