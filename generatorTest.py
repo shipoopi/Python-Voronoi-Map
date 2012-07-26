@@ -37,17 +37,23 @@ def main():
 
 
     numPoints = 12
+    pregen = [[226,159],[491,21],[490,225],[89,241],[170,152],[180,237],[51,47],[219,326],[472,305],[487,398],[331,235],[365,165],[130,162],[312,89],[242,112],]
     places = []
-    while len(places) < numPoints:
-        randPoint = None
-        while not randPoint:
-            randPoint = point.Point(random.randint(0, width), random.randint(0,width))
-            for existingPoint in places:
-                if existingPoint.y == randPoint.y:
-                    randPoint = None
-                    break
-            if randPoint:
-                places.append(randPoint)
+    if pregen:
+        for loc in pregen:
+            p = point.Point(loc[0], loc[1]);
+            places.append(p);
+    else:
+        while len(places) < numPoints:
+            randPoint = None
+            while not randPoint:
+                randPoint = point.Point(random.randint(0, width), random.randint(0,width))
+                for existingPoint in places:
+                    if existingPoint.y == randPoint.y:
+                        randPoint = None
+                        break
+                if randPoint:
+                    places.append(randPoint)
 #    places = [point.Point(random.randint(0, width), random.randint(0,width)) for i in range(numPoints)]
     computed = v.Compute(places, width, height)
     print "finished computing: ", v.cells
