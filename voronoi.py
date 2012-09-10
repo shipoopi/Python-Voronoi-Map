@@ -47,7 +47,6 @@ class Voronoi:
             self.queue.push(ev)
         loops = 0
         while not self.queue.isEmpty():
-            self.loopUntilReady()
             print "loop %d (%d)" % (loops, self.ly)
             e = self.queue.pop(None)
             self.ly = e.y
