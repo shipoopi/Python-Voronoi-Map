@@ -18,4 +18,17 @@ class VQueue:
             keyfun = operator.attrgetter("y")
         #TODO:  need to check if we need a reverse=True flag in the sort
         self.q.sort(key=keyfun)
-    #TODO:  the rest of the class
+    def remove(self, e):
+        index = -1
+        self.i = 0
+        while self.i < len(self.q):
+            if self.q[self.i] == e:
+                index = self.i
+                break
+            self.i += 1
+        #TODO:  don't know if this will work
+        self.q.pop(self.i)
+    def isEmpty(self):
+        return len(self.q) == 0
+    def clear(self):
+        self.q = []
