@@ -9,6 +9,7 @@ class VParabola:
 
         self.site = s
         self.isLeaf = (self.site != None)
+        self.cEvent = None
     #TODO:  need to check the set & get calls
     def getLeft(self):
         return self._left
